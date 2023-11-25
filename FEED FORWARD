@@ -1,0 +1,37 @@
+import tensorflow as tf
+from tensorflow.keras import layers, models
+
+# Define the architecture of the neural network
+def create_model():
+    model = models.Sequential([
+        layers.Dense(64, activation='relu', input_shape=(input_size,)),
+        layers.Dense(32, activation='relu'),
+        layers.Dense(output_size, activation='softmax')  # Adjust activation function for the output layer based on your problem
+    ])
+    return model
+
+# Example data dimensions
+input_size = 10
+output_size = 2
+
+# Create the model
+model = create_model()
+
+# Display the architecture of the model
+model.summary()
+
+# Compile the model
+model.compile(optimizer='adam',  # You can choose other optimizers like 'sgd', 'adam', etc.
+              loss='categorical_crossentropy',  # Adjust the loss function based on your problem
+              metrics=['accuracy'])
+
+# Generate dummy data for training
+import numpy as np
+x_train = np.random.random((1000, input_size))
+y_train = np.random.randint(2, size=(1000, output_size))
+
+# Convert labels to one-hot encoding if necessary
+# y_train = tf.keras.utils.to_categorical(y_train, num_classes=output_size)
+
+# Train the model
+model.fit(x_train, y_train, epochs=10, batch_size=32)

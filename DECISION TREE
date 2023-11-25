@@ -1,0 +1,30 @@
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+import matplotlib.pyplot as plt
+import csv
+
+# Read the CSV file
+with open("data.csv", 'r') as file:
+    reader = csv.DictReader(file)
+    data = list(reader)
+
+# Map categorical values to numerical values
+d_nationality = {'UK': 0, 'USA': 1, 'N': 2}
+d_go = {'YES': 1, 'NO': 0}
+
+for row in data:
+    row['Nationality'] = d_nationality.get(row['Nationality'], row['Nationality'])
+    row['Go'] = d_go.get(row['Go'], row['Go'])
+
+# Define features and target variable
+features = ['Age', 'Experience', 'Rank', 'Nationality']
+X = [[float(row[feature]) for feature in features] for row in data]
+y = [int(row['Go']) for row in data]
+
+# Create and fit the decision tree classifier
+dtree = DecisionTreeClassifier()
+dtree = dtree.fit(X, y)
+
+# Plot the decision tree
+plt.figure(figsize=(12, 8))
+plot_tree(dtree, feature_names=features, class_names=['NO', 'YES'], filled=True)
+plt.show()

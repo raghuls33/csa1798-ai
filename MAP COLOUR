@@ -1,0 +1,53 @@
+from itertools import product
+
+class CSP:
+    def __init__(self, region_variables, region_colors, constraints):
+        self.variables = region_variables
+        self.domains = {var: list(region_colors.values()) for var in region_variables}
+        self.constraints = constraints
+
+def not_equal_constraint(region1, region2):
+    return region1 != region2
+
+def is_valid_assignment(variable, value, constraint):
+    return constraint(variable, value)
+
+def backtracking_search(csp, assignment={}):
+    if len(assignment) == len(csp.variables):
+        return assignment  # All variables are assigned
+
+    variable = next(var for var in csp.variables if var not in assignment)
+    for value in csp.domains[variable]:
+        temp_assignment = assignment.copy()
+        temp_assignment[variable] = value
+        if all(is_valid_assignment(var, temp_assignment[var], csp.constraints[var]) for var in temp_assignment):
+            result = backtracking_search(csp, temp_assignment)
+            if result is not None:
+                return result
+    return None
+
+# Input the number of regions
+try:
+    num_regions = int(input("Enter the number of regions: "))
+except ValueError:
+    print("Please enter a valid integer for the number of regions.")
+    exit()
+
+# Input regions and colors
+region_variables = [f"Region-{i+1}" for i in range(num_regions)]
+regions = {variable: input(f"Enter region for {variable}: ") for variable in region_variables}
+colors = {region: input(f"Enter color for {region}: ") for region in regions.values()}
+
+# Define the map coloring CSP
+map_coloring_csp = CSP(region_variables, colors, {var: not_equal_constraint for var in region_variables})
+
+# Solve the map coloring problem using backtracking search with user input
+solution = backtracking_search(map_coloring_csp, regions)
+
+# Print the solution
+if solution:
+    print("\nMap Coloring Solution:")
+    for region, color in solution.items():
+        print(f"{region}: {color}")
+else:
+    print("No solution found.")

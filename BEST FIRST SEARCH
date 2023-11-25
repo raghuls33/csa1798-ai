@@ -1,0 +1,34 @@
+% Define a simple graph represented by edges
+edge(a, b, 2).
+edge(a, c, 5).
+edge(b, d, 3).
+edge(c, e, 4).
+edge(d, f, 6).
+edge(e, f, 7).
+
+% Define heuristic values for nodes
+heuristic(b, 3).  % Heuristic value for node b
+heuristic(c, 6).  % Heuristic value for node c
+heuristic(d, 5).  % Heuristic value for node d
+heuristic(e, 7).  % Heuristic value for node e
+heuristic(f, 0).  % Heuristic value for node f
+
+% Best First Search algorithm
+best_first_search(Start, Goal, Path) :-
+    best_first_search(Start, Goal, [Start], Path).
+
+best_first_search(Goal, Goal, Path, Path).
+
+best_first_search(Current, Goal, Visited, Path) :-
+    findall([Next, Cost], (edge(Current, Next, Cost), \+ member(Next, Visited)), NextList),
+    append(Visited, [Current], NewVisited),
+    choose_best(NextList, Goal, NewVisited, Path).
+
+% Helper predicate to choose the best node based on heuristic values
+choose_best([[Goal, ]|], Goal, Visited, Path) :-
+    append(Visited, [Goal], Path).
+choose_best(NextList, Goal, Visited, Path) :-
+    findall([H, Node], (member([Node, _], NextList), heuristic(Node, H)), HeuristicList),
+    sort(HeuristicList, SortedHeuristicList),
+    nth0(0, SortedHeuristicList, [_, NextNode]),
+    best_first_search(NextNode, Goal, Visited, Path).

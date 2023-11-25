@@ -1,0 +1,44 @@
+import math
+
+def distance(city1, city2):
+    # Calculate Euclidean distance between two cities
+    return math.sqrt((city1[0] - city2[0]) ** 2 + (city1[1] - city2[1]) ** 2)
+
+def nearest_neighbor(cities):
+    num_cities = len(cities)
+    unvisited = set(range(1, num_cities))  # Set of unvisited cities
+    current_city = 0  # Starting city
+    tour = [current_city]  # Initialize the tour with the starting city
+
+    while unvisited:
+        nearest_city = min(unvisited, key=lambda city: distance(cities[current_city], cities[city]))
+        tour.append(nearest_city)
+        unvisited.remove(nearest_city)
+        current_city = nearest_city
+
+    # Return to the starting city to complete the tour
+    tour.append(tour[0])
+
+    return tour
+
+def total_distance(tour, cities):
+    # Calculate the total distance of the tour
+    total_dist = 0
+    for i in range(len(tour) - 1):
+        total_dist += distance(cities[tour[i]], cities[tour[i + 1]])
+    return total_dist
+
+if __name__ == "__main__":
+    # Input the cities as (x, y) coordinates
+    cities = []
+    num_cities = int(input("Enter the number of cities: "))
+    for i in range(num_cities):
+        x, y = map(float, input(f"Enter the coordinates for city {i}: ").split())
+        cities.append((x, y))
+
+    # Find a tour using the nearest neighbor algorithm
+    tour = nearest_neighbor(cities)
+
+    # Print the tour and total distance
+    print("Tour:", tour)
+    print("Total Distance:", total_distance(tour, cities))
